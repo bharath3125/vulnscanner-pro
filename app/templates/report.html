@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Report - VulnScanner Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fa-solid fa-shield-halved text-primary"></i>
+                <span>VulnScanner<span class="text-muted fw-normal">Pro</span></span>
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto gap-4">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fa-solid fa-house me-2"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-clock-rotate-left me-2"></i>History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fa-solid fa-file-lines me-2"></i>Report</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-5 mt-5">
+            <div class="scanner-loader mx-auto"></div>
+            <h3 class="mt-4 text-white fw-bold">Scan In Progress</h3>
+            <p class="text-white-50">Please wait while the engine analyzes the target...</p>
+        </div>
+
+        <!-- Report Content -->
+        <div id="reportContent" style="display: none;">
+
+            <!-- Header Section -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-8">
+                    <div class="text-uppercase text-muted fs-7 fw-bold mb-2">Scan Report For</div>
+                    <h2 class="fw-bold mb-2 text-white"><span id="targetUrl"></span></h2>
+                    <div class="d-flex gap-3 text-white-50 small">
+                        <span><i class="fa-regular fa-clock me-1"></i> <span id="scanTime"></span></span>
+                        <span><i class="fa-solid fa-fingerprint me-1"></i> ID: <span id="scanID"></span></span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                    <button class="btn btn-outline-light btn-sm px-3" onclick="window.print()">
+                        <i class="fa-solid fa-print me-2"></i>Export PDF
+                    </button>
+                    <a href="/" class="btn btn-gradient btn-sm px-3 ms-2">
+                        <i class="fa-solid fa-plus me-2"></i>New Scan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="row g-3 mb-5">
+                <div class="col-lg-3 col-6">
+                    <div class="metric-card bg-critical">
+                        <div class="text-critical text-uppercase small fw-bold">Critical</div>
+                        <div class="metric-number text-white" id="countCritical">0</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="metric-card bg-high">
+                        <div class="text-high text-uppercase small fw-bold">High</div>
+                        <div class="metric-number text-white" id="countHigh">0</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="metric-card bg-medium">
+                        <div class="text-medium text-uppercase small fw-bold">Medium</div>
+                        <div class="metric-number text-white" id="countMedium">0</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="metric-card bg-low">
+                        <div class="text-low text-uppercase small fw-bold">Low</div>
+                        <div class="metric-number text-white" id="countLow">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Findings Section -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="fw-bold m-0"><i class="fa-solid fa-list-ul me-2 text-primary"></i>Detailed Findings</h3>
+                <span class="badge bg-secondary" id="totalFindingsBadge">0 Findings</span>
+            </div>
+
+            <div id="findingsList">
+                <!-- Findings Injected Here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 justify-content-between align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-1 fw-bold text-white">Web Vulnerability Scanner Pro</p>
+                    <p class="mb-0 small opacity-75">&copy; 2026 Security Research Lab. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex gap-4 justify-content-md-end">
+                        <a href="https://owasp.org/" target="_blank">OWASP Standards</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Use</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const scanId = "{{ scan_id }}";
+        const pollInterval = 2000;
+
+        // Toggle function for collapsibles
+        function toggleFinding(header) {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+        }
+
+        function getSeverityBadge(severity) {
+            switch (severity.toLowerCase()) {
+                case 'critical': return '<span class="badge-custom badge-critical">Critical</span>';
+                case 'high': return '<span class="badge-custom badge-high">High</span>';
+                case 'medium': return '<span class="badge-custom badge-medium">Medium</span>';
+                case 'low': return '<span class="badge-custom badge-low">Low</span>';
+                default: return '<span class="badge-custom badge-info">Info</span>';
+            }
+        }
+
+        function updateReport(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('reportContent').style.display = 'block';
+
+            const res = data.result;
+            document.getElementById('targetUrl').textContent = res.target_url;
+            document.getElementById('scanID').textContent = res.scan_id.substring(0, 8);
+            document.getElementById('scanTime').textContent = new Date(res.timestamp).toLocaleString();
+
+            const summary = res.summary;
+            document.getElementById('countCritical').textContent = summary.Critical || 0;
+            document.getElementById('countHigh').textContent = summary.High || 0;
+            document.getElementById('countMedium').textContent = summary.Medium || 0;
+            document.getElementById('countLow').textContent = summary.Low || 0;
+
+            const list = document.getElementById('findingsList');
+            list.innerHTML = '';
+            document.getElementById('totalFindingsBadge').textContent = `${res.findings.length} Findings`;
+
+            if (res.findings.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-check-circle fa-3x text-success mb-3"></i>
+                        <h4>No Vulnerabilities Found</h4>
+                        <p>Target appears secure against checked vectors.</p>
+                    </div>`;
+                return;
+            }
+
+            // Sort findings by severity (naive sort order)
+            const order = { 'Critical': 0, 'High': 1, 'Medium': 2, 'Low': 3, 'Info': 4 };
+            res.findings.sort((a, b) => (order[a.severity] ?? 99) - (order[b.severity] ?? 99));
+
+            res.findings.forEach(f => {
+                const badge = getSeverityBadge(f.severity);
+                const item = document.createElement('div');
+                item.className = 'finding-item';
+
+                // Icon selection based on category or name (simple heuristic)
+                let icon = 'fa-bug';
+                if (f.name.includes('SQL')) icon = 'fa-database';
+                if (f.name.includes('XSS')) icon = 'fa-code';
+                if (f.name.includes('Header')) icon = 'fa-shield';
+
+                item.innerHTML = `
+                    <div class="finding-header" onclick="toggleFinding(this)">
+                        <div class="finding-title">
+                            ${badge}
+                            <span class="ms-2"><i class="fa-solid ${icon} me-2 text-muted"></i>${f.name}</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                    <div class="finding-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-muted fs-7 fw-bold mb-2">Description</h6>
+                                <p class="small text-white opacity-90">${f.description}</p>
+                                
+                                <h6 class="text-uppercase text-muted fs-7 fw-bold mb-2 mt-4">Remediation</h6>
+                                <p class="small text-white opacity-90">${f.remediation}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-muted fs-7 fw-bold mb-2">Technical Evidence</h6>
+                                <div class="mb-3">
+                                    <span class="badge bg-secondary mb-2">${f.owasp_category || 'General'}</span>
+                                    <div class="d-flex align-items-center small text-break text-muted">
+                                        <i class="fa-solid fa-link me-2"></i> ${f.url}
+                                    </div>
+                                </div>
+                                <pre><code>${f.evidence || 'No raw evidence captured.'}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function checkStatus() {
+            fetch(`/api/scan/${scanId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'completed') {
+                        updateReport(data);
+                    } else if (data.status === 'failed') {
+                        document.getElementById('loading').innerHTML = `
+                            <div class="alert alert-danger d-inline-block">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i> Scan Failed. Please check logs.
+                            </div>`;
+                    } else {
+                        setTimeout(checkStatus, pollInterval);
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    setTimeout(checkStatus, pollInterval);
+                });
+        }
+
+        checkStatus();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,397 @@
+:root {
+    --bg-dark: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --primary-glow: #0ea5e9;
+    --secondary-glow: #8b5cf6;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --nav-height: 70px;
+}
+
+body {
+    background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background Animation */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Navbar */
+.navbar {
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    height: var(--nav-height);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand {
+    color: var(--text-main) !important;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary-glow) !important;
+}
+
+/* Main Container */
+main {
+    flex: 1;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+/* Footer */
+footer {
+    background: rgba(15, 23, 42, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 3rem 0;
+    margin-top: auto;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+footer a:hover {
+    color: var(--primary-glow);
+}
+
+/* Card Styles */
+.scanner-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 0.5rem;
+}
+
+/* Severity Colors */
+.text-critical {
+    color: #ff4d4d;
+}
+
+.text-high {
+    color: #fd7e14;
+}
+
+.text-medium {
+    color: #ffc107;
+}
+
+.text-low {
+    color: #0ea5e9;
+}
+
+.text-info {
+    color: #94a3b8;
+}
+
+.bg-critical {
+    border-top: 4px solid #ff4d4d;
+}
+
+.bg-high {
+    border-top: 4px solid #fd7e14;
+}
+
+.bg-medium {
+    border-top: 4px solid #ffc107;
+}
+
+.bg-low {
+    border-top: 4px solid #0ea5e9;
+}
+
+.bg-info {
+    border-top: 4px solid #94a3b8;
+}
+
+/* Collapsible Finding Card */
+.finding-item {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.finding-item:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.6);
+}
+
+.finding-header {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+}
+
+.finding-header:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.finding-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.severity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--secondary-glow);
+}
+
+.finding-body {
+    display: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    background: rgba(15, 23, 42, 0.3);
+    animation: slideDown 0.3s ease-out;
+}
+
+.finding-item.active .finding-body {
+    display: block;
+}
+
+.finding-item.active .chevron {
+    transform: rotate(180deg);
+}
+
+.chevron {
+    transition: transform 0.3s ease;
+    color: var(--text-muted);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Badge Styles */
+.badge-custom {
+    padding: 0.35em 0.8em;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-critical {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-high {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fdba74;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.badge-medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-low {
+    background: rgba(14, 165, 233, 0.2);
+    color: #7dd3fc;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.badge-info {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* Form Elements */
+.form-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.input-container {
+    position: relative;
+}
+
+.form-control {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    background: rgba(15, 23, 42, 1);
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    color: white;
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+/* Scan Mode Cards */
+.scan-option-label {
+    cursor: pointer;
+    width: 100%;
+}
+
+.scan-option-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+}
+
+.scan-option-input:checked+.scan-option-card {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 0 1px var(--primary-glow);
+}
+
+.scan-option-icon {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+.scan-option-input:checked+.scan-option-card .scan-option-icon {
+    color: var(--primary-glow);
+}
+
+/* Code/Evidence Block */
+pre {
+    background: #0b101e !important;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Spinner Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

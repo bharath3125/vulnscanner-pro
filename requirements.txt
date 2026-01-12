@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+httpx
+beautifulsoup4
+python-nmap
+jinja2
+pydantic
+aiofiles

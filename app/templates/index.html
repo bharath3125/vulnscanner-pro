@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Vuln Scanner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fa-solid fa-shield-halved text-primary"></i>
+                <span>VulnScanner<span class="text-muted fw-normal">Pro</span></span>
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto gap-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fa-solid fa-house me-2"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-clock-rotate-left me-2"></i>History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa-solid fa-book me-2"></i>Docs</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scanning Overlay -->
+    <div id="scanningOverlay" class="overlay" style="display: none;">
+        <div class="scanner-loader"></div>
+        <h3 class="mt-4 text-white fw-bold">Initiating Security Scan</h3>
+        <p class="text-white-50">Analyzing target architecture and identifying vulnerabilities...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container d-flex align-items-center">
+        <div class="row justify-content-center w-100">
+            <div class="col-lg-7 col-md-9">
+                <div class="scanner-card">
+                    <div class="text-center mb-5">
+                        <h2 class="fw-bold mb-2">New Security Scan</h2>
+                        <p class="text-muted">Enter a target URL to identify potential security risks.</p>
+                    </div>
+
+
+                    <div class="alert alert-warning d-flex align-items-start gap-3 p-3 mb-4 rounded-3 border-warning border-opacity-25 bg-warning bg-opacity-10"
+                        role="alert">
+                        <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+                        <div>
+                            <strong class="d-block mb-1">Authorization Required</strong>
+                            <span class="small opacity-75">Only scan targets you own or have explicit permission to
+                                test. Unauthorized scanning is illegal and unethical.</span>
+                        </div>
+                    </div>
+
+                    <form id="scanForm">
+                        <div class="mb-4">
+                            <label for="url" class="form-label">Target Endpoint</label>
+                            <div class="input-container">
+                                <input type="text" class="form-control ps-3" id="url" name="url"
+                                    placeholder="https://example.com" required>
+                            </div>
+                            <div class="form-text text-muted mt-2"><i class="fa-solid fa-circle-info me-1"></i> Supports
+                                HTTP and HTTPS protocols</div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label">Scan Configuration</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="scan-option-label">
+                                        <input type="radio" name="scanType" value="full"
+                                            class="scan-option-input d-none" checked>
+                                        <div class="scan-option-card">
+                                            <i class="fa-solid fa-magnifying-glass-chart scan-option-icon"></i>
+                                            <div>
+                                                <div class="fw-bold">Full Deep Scan</div>
+                                                <div class="small text-muted">Comprehensive analysis</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="scan-option-label">
+                                        <input type="radio" name="scanType" value="owasp_top_10"
+                                            class="scan-option-input d-none">
+                                        <div class="scan-option-card">
+                                            <i class="fa-solid fa-list-check scan-option-icon"></i>
+                                            <div>
+                                                <div class="fw-bold">OWASP Top 10</div>
+                                                <div class="small text-muted">Critical risk focus</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="btn btn-gradient w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fa-solid fa-rocket"></i> Launch Scanner
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 justify-content-between align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-1 fw-bold text-white">Web Vulnerability Scanner Pro</p>
+                    <p class="mb-0 small opacity-75">&copy; 2026 Security Research Lab. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex gap-4 justify-content-md-end">
+                        <a href="https://owasp.org/" target="_blank">OWASP Standards</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Use</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('scanForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const scanType = document.querySelector('input[name="scanType"]:checked').value;
+
+            // Show overlay
+            document.getElementById('scanningOverlay').style.display = 'flex';
+
+            try {
+                const response = await fetch('/api/scan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        scan_types: [scanType]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.scan_id) {
+                    window.location.href = `/report/${data.scan_id}`;
+                } else {
+                    alert("Failed to start scan");
+                    document.getElementById('scanningOverlay').style.display = 'none';
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error starting scan");
+                document.getElementById('scanningOverlay').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+
+</html>
