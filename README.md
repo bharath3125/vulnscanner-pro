@@ -88,6 +88,3 @@ web-vulnerability-scanner/
 - Unauthorized scanning is illegal and unethical.
 - The developers assume no liability for misuse of this tool.
 
-## 🛡️ License
-
-MIT
